@@ -1,0 +1,65 @@
+# ################################################################################################ #
+# MetaStack Solutions Ltd.                                                                         #
+# ################################################################################################ #
+# BitMask Sets                                                                                     #
+# ################################################################################################ #
+# Copyright (c) 2013-14 MetaStack Solutions Ltd.                                                   #
+# ################################################################################################ #
+# Author: David Allsopp                                                                            #
+# 6-Mar-2014                                                                                       #
+# ################################################################################################ #
+# Redistribution and use in source and binary forms, with or without modification, are permitted   #
+# provided that the following two conditions are met:                                              #
+#     1. Redistributions of source code must retain the above copyright notice, this list of       #
+#        conditions and the following disclaimer.                                                  #
+#     2. Neither the name of MetaStack Solutions Ltd. nor the names of its contributors may be     #
+#        used to endorse or promote products derived from this software without specific prior     #
+#        written permission.                                                                       #
+#                                                                                                  #
+# This software is provided by the Copyright Holder 'as is' and any express or implied warranties  #
+# including, but not limited to, the implied warranties of merchantability and fitness for a       #
+# particular purpose are disclaimed. In no event shall the Copyright Holder be liable for any      #
+# direct, indirect, incidental, special, exemplary, or consequential damages (including, but not   #
+# limited to, procurement of substitute goods or services; loss of use, data, or profits; or       #
+# business interruption) however caused and on any theory of liability, whether in contract,       #
+# strict liability, or tort (including negligence or otherwise) arising in any way out of the use  #
+# use of this software, even if advised of the possibility of such damage.                         #
+# ################################################################################################ #
+
+OASISFormat: 0.4
+AlphaFeatures: ocamlbuild_more_args, disable_oasis_section
+OCamlVersion: >= 3.12.0
+Name: bitmasks
+Version: 1.0.0
+License: BSD-3-clause with OCaml linking exception
+Synopsis: BitMasks over int and int64 exposed as sets
+Description:
+  Library for exposing bitmasks (typically as int or int64) in an implementation compatible with
+  OCaml's Set. The underlying data representation is unaltered, allowing the value to be manipulated
+  either as a bitmask or as a set without conversion.
+Authors: David Allsopp
+Maintainers: David Allsopp <david.allsopp@metastack.com>
+Homepage: http://foo.example.com
+Copyrights: (c) 2013-2014 MetaStack Solutions Ltd.
+#Categories: 
+Plugins: META (0.4), StdFiles (0.4), DevFiles (0.4)
+BuildTools: ocamlbuild
+# TODO Want to be able to specify a variable for the value of XStdFilesINSTALLFilename rather than INSTALL.txt
+DisableOASISSection: INSTALL.txt
+XStdFilesAUTHORS: false
+XStdFilesREADME: false
+
+Library bitmasks
+  Path: .
+  Modules: BitMaskSet
+
+Document "api-bitmasks"
+  Title: API reference for BitMasks
+  Type: ocamlbuild (0.4)
+  BuildTools+: ocamldoc
+  InstallDir: $htmldir/bitmasks
+  XOCamlbuildPath: .
+  XOCamlbuildLibraries: bitmasks
+  XOCamlbuildExtraArgs: -docflags -stars,-colorize-code
+  # OCaml PR#6341
+  PostCommand: sed -i -e "s/<br>//g" _build/api-bitmasks.docdir/BitMask*.html
