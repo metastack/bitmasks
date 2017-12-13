@@ -93,22 +93,31 @@ module type Storage =
   sig
     type storage
     (** The storage type. *)
+
     val zero : storage
     (** The value for [0]. *)
+
     val one : storage
     (** The value for [1]. *)
+
     val logand : storage -> storage -> storage
     (** The [land] operator. *)
+
     val logor : storage -> storage -> storage
     (** The [lor] operator. *)
+
     val lognot : storage -> storage
     (** The [lnot] operator. *)
+
     val shift_left : storage -> int -> storage
     (** The [lsl] operator. *)
+
     val shift_right_logical : storage -> int -> storage
     (** The [lsr] operator. *)
+
     val compare : storage -> storage -> int
     (** The [compare] operator. *)
+
     val toString : storage -> string
     (** Conversion to [string] for the [storage] type. *)
   end
@@ -131,6 +140,7 @@ module type BitMask =
        - [topbit = 12]
        - [shifts = [(2, 3); (3, 5)]]
      *)
+
     include Storage
     type t
     (**
@@ -139,17 +149,22 @@ module type BitMask =
        structure will break type safety and using a type whose underlying representation is not an
        integer will almost certainly cause segfaults.
      *)
+
     val mask : storage
     (** Binary mask of valid bits. *)
+
     val highest : storage
     (** Value of the highest valid bit. *)
+
     val lowest : storage
     (** Value of the lowest valid bit. *)
+
     val topbit : int
     (**
        The numeric value of the position of the highest valid bit. For example, if {!highest} is
        [0b10000] then [topbit] is [4]. 
      *)
+
     val shifts : (int * int) list
     (**
        Allows for gaps of unused bits in the bitmask without needing dummy constructors in {!t}.
@@ -165,6 +180,7 @@ module type BitMask =
 
 module Int : Storage with type storage = int
 (** Implementation of {!Storage} for type [int] *)
+
 module Int64 : Storage with type storage = int64
 (** Implementation of {!Storage} for type [int64] *)
 
@@ -177,8 +193,10 @@ module Make (Mask : BitMask) :
        The type of bitmasks. This is separate from {!storage} as it will typically be exposed as a
        [private] type.
      *)
+
     val create : storage -> t
     (** Creates a bitmask from the storage type (this operation is simply the identity function). *)
+
     val invalid : Mask.storage -> Mask.storage
     (**
        [invalid mask] returns a mask where only the bits which are invalid remain set. The handling
@@ -187,52 +205,66 @@ module Make (Mask : BitMask) :
        safety: for use cases where the invalid bits should be ignored, use this function to remove
        them from the bit mask (e.g. [diff (create x) (invalid x)]).
      *)
+
     val empty : Mask.storage
     (** The empty bitmask. *)
+
     val is_empty : Mask.storage -> bool
     (** Tests whether a bitmask is empty or not (includes invalid bits). *)
+
     val mem : Mask.t -> Mask.storage -> bool
     (** [mem x s] tests whether [x] is set in [s]. *)
+
     val add : Mask.t -> Mask.storage -> Mask.storage
     (**
        [add x s] returns a bitmask containing all the elements of [s] with [x] set. If [x] was
        already set in [s], [s] is returned unchanged.
      *)
+
     val singleton : Mask.t -> Mask.storage
     (** [singleton x] returns the bitmask with only [x] set. *)
+
     val remove : Mask.t -> Mask.storage -> Mask.storage
     (**
        [remove x s] returns a bitmask containing all the elements of [s] with [x] not set. If [x]
        was not set in [s], [s] is returned unchanged.
      *)
+
     val union : Mask.storage -> Mask.storage -> Mask.storage
     (** Bitmask union (invalid bits are included). *)
+
     val inter : Mask.storage -> Mask.storage -> Mask.storage
     (** Bitmask intersection (invalid bits are included). *)
+
     val diff : Mask.storage -> Mask.storage -> Mask.storage
     (** Bitmask difference (invalid bits are included). *)
+
     val compare : Mask.storage -> Mask.storage -> int
     (**
        Total ordering between bitmasks. The presence of differing invalid bits may make two
        otherwise identical bitmasks differ.
      *)
+
     val equal : Mask.storage -> Mask.storage -> bool
     (**
        [equal s1 s2] tests whether the bitmasks [s1] and [s2] are equal, that is, contain the same
        set elements. The presence of differing invalid bits may make two otherwise identical
        bitmasks differ.
      *)
+
     val subset : Mask.storage -> Mask.storage -> bool
     (**
        [subset s1 s2] tests whether the bitmask [s1] is a subset of the bitmask [s2] (invalid bits
        are included).
      *)
+
     val iter : (Mask.t -> unit) -> Mask.storage -> unit
     (**
        [iter f s] applies [f] in turn to all elements of [s]. The elements of [s] are presented to
        [f] in increasing order with respect to the bit number (i.e. the constructor position within
        type [Mask.t]).
      *)
+
     val map : (Mask.t -> Mask.t) -> Mask.storage -> Mask.storage
     (**
        [map f s] is the bitmask whose elements are [f a0],[f a1]... [f aN], where [a0],[a1]...[aN]
@@ -243,37 +275,46 @@ module Make (Mask : BitMask) :
       
        @since 1.1.0
      *)
+
     val fold : (Mask.t -> 'a -> 'a) -> Mask.storage -> 'a -> 'a
     (**
        [fold f s a] computes [(f xN ... (f x2 (f x1 a))...)], where [x1 ... xN] are the elements of
        [s], in increasing order with respect to the bit number (i.e. the constructor position within
        type [Mask.t]).
      *)
+
     val for_all : (Mask.t -> bool) -> Mask.storage -> bool
     (** [for_all p s] checks if all elements of the bitmask satisfy the predicate [p]. *)
+
     val exists : (Mask.t -> bool) -> Mask.storage -> bool
     (** [exists p s] checks if at least one element of the bitmask satisfies the predicate [p]. *)
+
     val filter : (Mask.t -> bool) -> Mask.storage -> Mask.storage
     (** [filter p s] returns the bitmask of all elements in [s] that satisfy the predicate [p]. *)
+
     val partition : (Mask.t -> bool) -> Mask.storage -> Mask.storage * Mask.storage
     (**
        [partition p s] returns a pair of bitmasks [(s1, s2)], where [s1] is the bitmask of all
        elements of [s] that satisfy the predicate [p], and [s2] is the bitmask of all the elements
        of [s] that do not satisfy [p]. [s2] will not contain any invalid bits present in [s].
      *)
+
     val cardinal : Mask.storage -> int
     (** Return the number of bits which are set in the [bitmask] (does not include invalid bits). *)
+
     val elements : Mask.storage -> Mask.t list
     (**
        Return the list of all elements of the given bitmask. The returned list is sorted in
        increasing order with respect to the bit number (i.e. the constructor position within type
        [Mask.t]).
      *)
+
     val min_elt : Mask.storage -> Mask.t
     (**
        Return the smallest element of the given bitmask (with respect to the bit number, i.e. the
        constructor position within type [Mask.t]) or raise [Not_found] if the bitmask is empty.
      *)
+
     val min_elt_opt : Mask.storage -> Mask.t option
     (**
        Return the smallest element of the given bitmask (with respect to the bit number, i.e. the
@@ -281,20 +322,24 @@ module Make (Mask : BitMask) :
       
        @since 1.1.0
      *)
+
     val max_elt : Mask.storage -> Mask.t
     (** Same as {!min_elt}, but returns the largest element of the given bitmask. *)
+
     val max_elt_opt : Mask.storage -> Mask.t option
     (**
        Same as {!min_elt_opt}, but returns the largest element of the given bitmask.
       
        @since 1.1.0
      *)
+
     val choose : Mask.storage -> Mask.t
     (**
        Return one element of the given bitmask, or raise [Not_found] if the bitmask is empty. Which
        element is chosen is unspecified, but equal elements will be chosen for equal bitmasks
        (differing invalid bits do not affect this function).
      *)
+
     val choose_opt : Mask.storage -> Mask.t option
     (**
        Return one element of the given bitmask, or [None] if the bitmask is empty. Which element is
@@ -303,6 +348,7 @@ module Make (Mask : BitMask) :
       
        @since 1.1.0
      *)
+
     val split : Mask.t -> Mask.storage -> Mask.storage * bool * Mask.storage
     (**
        [split x s] returns a triple [(l, present, r)], where [l] is the bitmask of elements of [s]
@@ -310,14 +356,17 @@ module Make (Mask : BitMask) :
        greater than [x] and [present] is [true] if [x] is set in [s]. [l] and [r] will not contain
        invalid bits.
      *)
+
     val find : Mask.t -> Mask.storage -> Mask.t
     (** [find x s] returns [x] if [x] is set in [s] or raises [Not_found] if it is not. *)
+
     val find_opt : Mask.t -> Mask.storage -> Mask.t option
     (**
        [find_opt x s] returns [Some x] if [x] is set in [s] or [None] if it is not.
       
        @since 1.1.0
      *)
+
     val find_first : (Mask.t -> bool) -> Mask.storage -> Mask.t
     (**
        [find_first f s], where [f] is a monotonically increasing function, returns the smallest
@@ -326,6 +375,7 @@ module Make (Mask : BitMask) :
       
        @since 1.1.0
      *)
+
     val find_first_opt : (Mask.t -> bool) -> Mask.storage -> Mask.t option
     (**
        [find_first_opt f s], where [f] is a monotonically increasing function, returns an option
@@ -335,6 +385,7 @@ module Make (Mask : BitMask) :
       
        @since 1.1.0
      *)
+
     val find_last : (Mask.t -> bool) -> Mask.storage -> Mask.t
     (**
        [find_last f s], where [f] is a monotonically increasing function, returns the largest
@@ -343,6 +394,7 @@ module Make (Mask : BitMask) :
       
        @since 1.1.0
      *)
+
     val find_last_opt : (Mask.t -> bool) -> Mask.storage -> Mask.t option
     (**
        [find_last_opt f s], where [f] is a monotonically increasing function, returns an option
@@ -352,6 +404,7 @@ module Make (Mask : BitMask) :
       
        @since 1.1.0
      *)
+
     val of_list : Mask.t list -> t
     (**
        [of_list l] creates a bitmask from a list of elements. For bitmasks, this is just a
