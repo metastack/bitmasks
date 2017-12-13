@@ -23,7 +23,7 @@
 # limited to, procurement of substitute goods or services; loss of use, data, or profits; or       #
 # business interruption) however caused and on any theory of liability, whether in contract,       #
 # strict liability, or tort (including negligence or otherwise) arising in any way out of the use  #
-# use of this software, even if advised of the possibility of such damage.                         #
+# of this software, even if advised of the possibility of such damage.                             #
 # ################################################################################################ #
 # OASIS_START
 # DO NOT EDIT (digest: d41d8cd98f00b204e9800998ecf8427e)
