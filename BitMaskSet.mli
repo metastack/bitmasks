@@ -41,14 +41,37 @@ module type S =
     (**/**)
 
     (* ****************************************************************************************** *
-     * Set.Make.find was only added in 4.01.0. It's always exposed in this implementation,        *
-     * regardless of OCaml version.                                                               *
+     * The functions below were added to various compiler versions after this release, but they   *
+     * are always exposed in this implementation, regardless of the OCaml version.                *)
+
+    (* ****************************************************************************************** *
+     * Added in 4.04.0.                                                                           *
+     * ****************************************************************************************** *)
+    val map : (elt -> elt) -> t -> t
+
+    (* ****************************************************************************************** *
+     * Added in 4.05.0.                                                                           *
+     * ****************************************************************************************** *)
+    val min_elt_opt : t -> elt option
+    val max_elt_opt : t -> elt option
+    val choose_opt : t -> elt option
+
+    (* ****************************************************************************************** *
+     * Added in 4.01.0.                                                                           *
      * ****************************************************************************************** *)
     val find : elt -> t -> elt
 
     (* ****************************************************************************************** *
-     * Set.Make.of_list was only added in 4.02.0. It's always exposed in this implementation,     *
-     * regardless of OCaml version.                                                               *
+     * Added in 4.05.0.                                                                           *
+     * ****************************************************************************************** *)
+    val find_opt : elt -> t -> elt option
+    val find_first : (elt -> bool) -> t -> elt
+    val find_first_opt : (elt -> bool) -> t -> elt option
+    val find_last : (elt -> bool) -> t -> elt
+    val find_last_opt : (elt -> bool) -> t -> elt option
+
+    (* ****************************************************************************************** *
+     * Added in 4.02.0.                                                                           *
      * ****************************************************************************************** *)
     val of_list : elt list -> t
 
@@ -210,6 +233,16 @@ module Make (Mask : BitMask) :
      * [f] in increasing order with respect to the bit number (i.e. the constructor position within
      * type [Mask.t]).
      *)
+    val map : (Mask.t -> Mask.t) -> Mask.storage -> Mask.storage
+    (**
+     * [map f s] is the bitmask whose elements are [f a0],[f a1]... [f aN], where [a0],[a1]...[aN]
+     * are the elements of [s.]. The elements are passed to [f] in increasing order with respect to
+     * the bit number (i.e. the constructor position within type [Mask.t]).
+     *
+     * If no element of [s] is changed by [f], [s] is returned unchanged.
+     *
+     * @since 1.1.0
+     *)
     val fold : (Mask.t -> 'a -> 'a) -> Mask.storage -> 'a -> 'a
     (**
      * [fold f s a] computes [(f xN ... (f x2 (f x1 a))...)], where [x1 ... xN] are the elements of
@@ -241,13 +274,34 @@ module Make (Mask : BitMask) :
      * Return the smallest element of the given bitmask (with respect to the bit number, i.e. the
      * constructor position within type [Mask.t]) or raise [Not_found] if the bitmask is empty.
      *)
+    val min_elt_opt : Mask.storage -> Mask.t option
+    (**
+     * Return the smallest element of the given bitmask (with respect to the bit number, i.e. the
+     * constructor position within type [Mask.t]) or [None] if the bitmask is empty.
+     *
+     * @since 1.1.0
+     *)
     val max_elt : Mask.storage -> Mask.t
     (** Same as {!min_elt}, but returns the largest element of the given bitmask. *)
+    val max_elt_opt : Mask.storage -> Mask.t option
+    (**
+     * Same as {!min_elt_opt}, but returns the largest element of the given bitmask.
+     *
+     * @since 1.1.0
+     *)
     val choose : Mask.storage -> Mask.t
     (**
      * Return one element of the given bitmask, or raise [Not_found] if the bitmask is empty. Which
      * element is chosen is unspecified, but equal elements will be chosen for equal bitmasks
      * (differing invalid bits do not affect this function).
+     *)
+    val choose_opt : Mask.storage -> Mask.t option
+    (**
+     * Return one element of the given bitmask, or [None] if the bitmask is empty. Which element is
+     * chosen is unspecified, but equal elements will be chosen for equal bitmasks (differing
+     * invalid bits do not affect this function).
+     *
+     * @since 1.1.0
      *)
     val split : Mask.t -> Mask.storage -> Mask.storage * bool * Mask.storage
     (**
@@ -258,6 +312,46 @@ module Make (Mask : BitMask) :
      *)
     val find : Mask.t -> Mask.storage -> Mask.t
     (** [find x s] returns [x] if [x] is set in [s] or raises [Not_found] if it is not. *)
+    val find_opt : Mask.t -> Mask.storage -> Mask.t option
+    (**
+     * [find_opt x s] returns [Some x] if [x] is set in [s] or [None] if it is not.
+     *
+     * @since 1.1.0
+     *)
+    val find_first : (Mask.t -> bool) -> Mask.storage -> Mask.t
+    (**
+     * [find_first f s], where [f] is a monotonically increasing function, returns the smallest
+     * element [e] of [s] (with respect to the bit number, i.e. the constructor position within type
+     * [Mask.t]) such that [f e] or raises [Not_found] if no such element exists.
+     *
+     * @since 1.1.0
+     *)
+    val find_first_opt : (Mask.t -> bool) -> Mask.storage -> Mask.t option
+    (**
+     * [find_first_opt f s], where [f] is a monotonically increasing function, returns an option
+     * containing the smallest element [e] of [s] (with respect to the bit number, i.e. the
+     * constructor position within type [Mask.t]) such that [f e] or [None] if no such element
+     * exists.
+     *
+     * @since 1.1.0
+     *)
+    val find_last : (Mask.t -> bool) -> Mask.storage -> Mask.t
+    (**
+     * [find_last f s], where [f] is a monotonically increasing function, returns the largest
+     * element [e] of [s] (with respect to the bit number, i.e. the constructor position within type
+     * [Mask.t]) such that [f e] or raises [Not_found] if no such element exists.
+     *
+     * @since 1.1.0
+     *)
+    val find_last_opt : (Mask.t -> bool) -> Mask.storage -> Mask.t option
+    (**
+     * [find_last_opt f s], where [f] is a monotonically increasing function, returns an option
+     * containing the largest element [e] of [s] (with respect to the bit number, i.e. the
+     * constructor position within type [Mask.t]) such that [f e] or [None] if no such element
+     * exists.
+     *
+     * @since 1.1.0
+     *)
     val of_list : Mask.t list -> t
     (**
      * [of_list l] creates a bitmask from a list of elements. For bitmasks, this is just a
