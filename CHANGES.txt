@@ -1,3 +1,7 @@
+????-??-?? David Allsopp <david.allsopp -at- metastack.dot.com>
+  Version 1.1.0
+* Ensure physical equality maintained in add and remove (as in OCaml 4.03.0)
+
 2014-03-16 David Allsopp <david.allsopp -at- metastack.dot.com>
   Version 1.0.0
 * Initial release

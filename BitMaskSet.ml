@@ -3,7 +3,7 @@
  * ********************************************************************************************** *
  * BitMask Sets                                                                                   *
  * ********************************************************************************************** *
- * Copyright (c) 2013-14 MetaStack Solutions Ltd.                                                 *
+ * Copyright (c) 2013-17 MetaStack Solutions Ltd.                                                 *
  * ********************************************************************************************** *
  * Author: David Allsopp                                                                          *
  * 27-Dec-2013                                                                                    *
@@ -163,7 +163,11 @@ module Make(Mask : BitMask) =
       else flag
 
     let add flag set =
-      Mask.logor set (storage_of_flag flag)
+      let set' = Mask.logor set (storage_of_flag flag)
+      in
+        if Mask.compare set set' = 0
+        then set
+        else set'
 
     let of_list l =
       List.fold_left (fun s f -> add f s) empty l
@@ -171,7 +175,11 @@ module Make(Mask : BitMask) =
     let singleton = storage_of_flag
 
     let remove flag set =
-      Mask.logand set (Mask.lognot (storage_of_flag flag))
+      let set' = Mask.logand set (Mask.lognot (storage_of_flag flag))
+      in
+        if Mask.compare set set' = 0
+        then set
+        else set'
 
     let union = Mask.logor
     
