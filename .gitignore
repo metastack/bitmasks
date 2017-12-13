@@ -1,15 +1,6 @@
 # Build system files
 _build
-setup.data
-setup.log
-# OASIS generated files
-INSTALL.txt
-configure
-_tags
-api-bitmasks.odocl
-bitmasks.mldylib
-bitmasks.mllib
-myocamlbuild.ml
-setup.ml
+.merlin
+bitmasks.install
 # Vim swap files
 .*.swp

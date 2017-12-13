@@ -3,7 +3,7 @@
 # ################################################################################################ #
 # BitMask Sets                                                                                     #
 # ################################################################################################ #
-# Copyright (c) 2013-14 MetaStack Solutions Ltd.                                                   #
+# Copyright (c) 2013-17 MetaStack Solutions Ltd.                                                   #
 # ################################################################################################ #
 # Author: David Allsopp                                                                            #
 # 27-Dec-2013                                                                                      #
@@ -25,12 +25,34 @@
 # strict liability, or tort (including negligence or otherwise) arising in any way out of the use  #
 # of this software, even if advised of the possibility of such damage.                             #
 # ################################################################################################ #
-# OASIS_START
-# DO NOT EDIT (digest: d41d8cd98f00b204e9800998ecf8427e)
-# OASIS_STOP
 
-bitmasks-%.tar.gz:
-	mkdir .$@.working
-	git clone https://github.com/dra27/bitmasks.git .$@.working
-	cd .$@.working && git checkout tags/v$* && oasis setup && tar --transform='s/^./bitmasks-$*/' -czf ../$@ ./*
-	rm -rf .$@.working
+JBUILDER=jbuilder
+
+build:
+	$(JBUILDER) build @install
+
+doc:
+	$(JBUILDER) build @doc
+
+test:
+	$(JBUILDER) runtest
+
+all: build doc test
+
+install:
+	$(JBUILDER) install $(INSTALLFLAGS)
+
+uninstall:
+	$(JBUILDER) uninstall $(UNINSTALLFLAGS)
+
+reinstall:
+	$(JBUILDER) uninstall $(REINSTALLFLAGS)
+	$(JBUILDER) install $(REINSTALLFLAGS)
+
+clean:
+	$(JBUILDER) clean
+
+distclean:
+	$(JBUILDER) clean
+
+.PHONY: build doc test all install uninstall reinstall clean distclean
