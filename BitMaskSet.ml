@@ -182,7 +182,7 @@ module Make(Mask : BitMask) =
         else set'
 
     let union = Mask.logor
-    
+
     let inter = Mask.logand
 
     let diff a b =
@@ -218,7 +218,7 @@ module Make(Mask : BitMask) =
      * ****************************************************************************************** *)
 
     (* ****************************************************************************************** *
-     * The iterators are count over the bit positions -- for the iterator itself, [i] is the      *
+     * The iterators count over the bit positions -- for the iterator itself, [i] is the          *
      * constructor number, [v] is the bit value for that constructor and [s] is the shifts.       *
      * ****************************************************************************************** *)
 

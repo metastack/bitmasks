@@ -6,7 +6,7 @@
  * Copyright (c) 2013-14 MetaStack Solutions Ltd.                                                 *
  * ********************************************************************************************** *
  * Author: David Allsopp                                                                          *
- * 27-Dec-2013                                                                                    *
+ * 27-Dec-2017                                                                                    *
  * ********************************************************************************************** *
  * Redistribution and use in source and binary forms, with or without modification, are permitted *
  * provided that the following two conditions are met:                                            *
@@ -207,8 +207,8 @@ module Make (Mask : BitMask) :
     val iter : (Mask.t -> unit) -> Mask.storage -> unit
     (**
      * [iter f s] applies [f] in turn to all elements of [s]. The elements of [s] are presented to
-     * [f] in increasing ordering with respect to the bit number (i.e. the constructor position
-     * within type [Mask.t]).
+     * [f] in increasing order with respect to the bit number (i.e. the constructor position within
+     * type [Mask.t]).
      *)
     val fold : (Mask.t -> 'a -> 'a) -> Mask.storage -> 'a -> 'a
     (**
@@ -234,20 +234,20 @@ module Make (Mask : BitMask) :
     (**
      * Return the list of all elements of the given bitmask. The returned list is sorted in
      * increasing order with respect to the bit number (i.e. the constructor position within type
-     * Mask.t).
+     * [Mask.t]).
      *)
     val min_elt : Mask.storage -> Mask.t
     (**
      * Return the smallest element of the given bitmask (with respect to the bit number, i.e. the
-     * constructor position within type Mask.t) or raise [Not_found] if the bitmask is empty.
+     * constructor position within type [Mask.t]) or raise [Not_found] if the bitmask is empty.
      *)
     val max_elt : Mask.storage -> Mask.t
     (** Same as {!min_elt}, but returns the largest element of the given bitmask. *)
     val choose : Mask.storage -> Mask.t
     (**
      * Return one element of the given bitmask, or raise [Not_found] if the bitmask is empty. Which
-     * element is chosen is unspecified, but equal elements will be chosen for equal sets (differing
-     * invalid bits do not affect this function).
+     * element is chosen is unspecified, but equal elements will be chosen for equal bitmasks
+     * (differing invalid bits do not affect this function).
      *)
     val split : Mask.t -> Mask.storage -> Mask.storage * bool * Mask.storage
     (**
