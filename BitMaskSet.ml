@@ -121,6 +121,16 @@ module Make(Mask : BitMask) =
     let shiftsInv = List.rev Mask.shifts
 
     (* ****************************************************************************************** *
+     * Prior to 1.1.0, Masks.shifts was incorrectly used by all functions except storage_of_flag  *
+     * when Mask.lowest <> Mask.one. In this case, the first shift should be ignored, because     *
+     * Mask.lowest has already taken it into account.                                             *
+     * ****************************************************************************************** *)
+    let shifts =
+      match Mask.shifts with
+        (0, _)::shifts -> shifts
+      | _ -> Mask.shifts
+
+    (* ****************************************************************************************** *
      * create, invalid, empty and is_empty are straightforward.                                   *
      * ****************************************************************************************** *)
     let create mask =
@@ -252,7 +262,7 @@ module Make(Mask : BitMask) =
                         in
                           f i (Mask.shift_left v shift) s
         in
-          f 0 Mask.lowest Mask.shifts
+          f 0 Mask.lowest shifts
 
     let find_first_opt g set =
       let set = Mask.logand set Mask.mask
@@ -270,7 +280,7 @@ module Make(Mask : BitMask) =
                         in
                           f i (Mask.shift_left v shift) s
         in
-          f 0 Mask.lowest Mask.shifts
+          f 0 Mask.lowest shifts
 
     let find_last g set =
       let set = Mask.logand set Mask.mask
@@ -322,7 +332,7 @@ module Make(Mask : BitMask) =
                  in
                    f i (Mask.shift_left v shift) s
         in
-          f 0 Mask.lowest Mask.shifts
+          f 0 Mask.lowest shifts
 
     let fold g set acc =
       let set = Mask.logand set Mask.mask
@@ -340,7 +350,7 @@ module Make(Mask : BitMask) =
                    f a i (Mask.shift_left v shift) s
           else a
         in
-          f acc 0 Mask.lowest Mask.shifts
+          f acc 0 Mask.lowest shifts
 
     let map g set' =
       let set = Mask.logand set' Mask.mask
@@ -360,7 +370,7 @@ module Make(Mask : BitMask) =
                then set'
                else a
         in
-          f Mask.zero 0 Mask.lowest Mask.shifts
+          f Mask.zero 0 Mask.lowest shifts
 
     let for_all p set =
       let set = Mask.logand set Mask.mask
@@ -381,7 +391,7 @@ module Make(Mask : BitMask) =
                    else f i' v' s
           else true
         in
-          f 0 Mask.lowest Mask.shifts
+          f 0 Mask.lowest shifts
 
     let exists p set =
       let set = Mask.logand set Mask.mask
@@ -402,7 +412,7 @@ module Make(Mask : BitMask) =
                    else f i' v' s
           else false
         in
-          f 0 Mask.lowest Mask.shifts
+          f 0 Mask.lowest shifts
 
     let filter p set =
       let set = Mask.logand set Mask.mask
@@ -420,7 +430,7 @@ module Make(Mask : BitMask) =
                    f a i (Mask.shift_left v shift) s
           else a
         in
-          f Mask.zero 0 Mask.lowest Mask.shifts
+          f Mask.zero 0 Mask.lowest shifts
 
     let partition p set =
       let set = Mask.logand set Mask.mask
@@ -440,7 +450,7 @@ module Make(Mask : BitMask) =
                    f a i (Mask.shift_left v shift) s
           else a
         in
-          f (Mask.zero, Mask.zero) 0 Mask.lowest Mask.shifts
+          f (Mask.zero, Mask.zero) 0 Mask.lowest shifts
 
     let cardinal set =
       let set = Mask.logand set Mask.mask
@@ -489,7 +499,7 @@ module Make(Mask : BitMask) =
                         f i (Mask.shift_left v shift) s
           else raise Not_found
         in
-          f 0 Mask.lowest Mask.shifts
+          f 0 Mask.lowest shifts
 
     let min_elt_opt set =
       let set = Mask.logand set Mask.mask
@@ -505,7 +515,7 @@ module Make(Mask : BitMask) =
                         f i (Mask.shift_left v shift) s
                else None
         in
-          f 0 Mask.lowest Mask.shifts
+          f 0 Mask.lowest shifts
 
     let max_elt set =
       let set = Mask.logand set Mask.mask
@@ -566,5 +576,5 @@ module Make(Mask : BitMask) =
                    f a i (Mask.shift_left v shift) s
           else a
         in
-          f (Mask.zero, false, Mask.zero) 0 Mask.lowest Mask.shifts
+          f (Mask.zero, false, Mask.zero) 0 Mask.lowest shifts
   end

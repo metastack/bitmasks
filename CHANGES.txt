@@ -4,6 +4,7 @@
 * Ensure physical equality maintained in add and remove (as in OCaml 4.03.0)
 * Add missing functions introduced in OCaml 4.04.0 and 4.05.0
 * Correct documentation of BitMask.topbit
+* Fix incorrect use of Mask.shifts when Mask.lowest <> Mask.one
 
 2014-03-16 David Allsopp <david.allsopp -at- metastack.dot.com>
   Version 1.0.0

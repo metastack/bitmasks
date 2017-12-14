@@ -65,11 +65,11 @@ module BMEvil : T =
       struct
         type t = elt
 
-        let mask = 0b1100000100011L
-        let lowest = 0b1L
+        let mask = 0b1100000100110L
+        let lowest = 0b10L
         let highest = 0b1000000000000L
         let topbit = 4
-        let shifts = [(2, 3); (3, 5)]
+        let shifts = [(0, 1); (2, 2); (3, 5)]
 
         include BitMaskSet.Int64
       end
