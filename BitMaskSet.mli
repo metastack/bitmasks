@@ -129,50 +129,25 @@ module type Storage =
 module type BitMask =
   sig
     (**
-       This signature extends the {!Storage} signature.
+       This signature extends the {!Storage} signature with a mask of valid bits and a sum type to
+       represent those bits.
       
        For example, given [type t = A | B | C | D | E] where [A] and [B] correspond to bits 0 and 1,
        bits 2-4 are unused, [C] corresponds to bit 5, bits 6-10 are unused, and [D] and [E]
-       correspond to bits 11 and 12 then the values would be as follow:
-       - [mask = 0b1100000100011]
-       - [highest = 0b1000000000000]
-       - [lowest = 0b1]
-       - [topbit = 4]
-       - [shifts = [(2, 3); (3, 5)]]
+       correspond to bits 11 and 12 then all that is needed is a mask of [0b1100000100011].
      *)
 
     include Storage
     type t
     (**
        The (sum) type used for the elements in the bitmask. Constructors may include values, but the
-       bitmask itself will only be over the constant constructors. Inconsistent values in the
-       structure will break type safety and using a type whose underlying representation is not an
-       integer will almost certainly cause segfaults.
+       bitmask itself will only be over the constant constructors. Using a type whose underlying
+       representation is not an integer will almost certainly cause segfaults. The sum type must
+       have at least as many constant constructors as there are bits in the mask itself.
      *)
 
     val mask : storage
     (** Binary mask of valid bits. *)
-
-    val highest : storage
-    (** Value of the highest valid bit. *)
-
-    val lowest : storage
-    (** Value of the lowest valid bit. *)
-
-    val topbit : int
-    (**
-       The numeric value of the highest valid constant constructor in the sum type (essentially, one
-       less than the number of 1s in {!mask}). This was incorrectly defined as the value of the
-       topmost valid bit in 1.0.0 (hence the strange name).
-     *)
-
-    val shifts : (int * int) list
-    (**
-       Allows for gaps of unused bits in the bitmask without needing dummy constructors in {!t}.
-       Each item specifies a bit number (numbering from [0]) and the number of bits which are
-       unused. The bit number is specified {b as though the unused bits were not present}. See the
-       example above.
-     *)
   end
 (**
    Input signature for {!Make} combining {!Storage} with the actual details of a bitmask.

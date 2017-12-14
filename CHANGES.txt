@@ -7,6 +7,8 @@
 * Fix incorrect use of Mask.shifts when Mask.lowest <> Mask.one
 * Allow the sign bit to be included in a bitmask (affects fold, for_all, exists, filter, partition,
   cardinal, elements, min_elt, max_elt and split)
+* Reduce BitMask signature to requiring only the type and the mask and calculate the other values
+  automatically.
 
 2014-03-16 David Allsopp <david.allsopp -at- metastack.dot.com>
   Version 1.0.0

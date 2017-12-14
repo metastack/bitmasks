@@ -69,10 +69,6 @@ module type BitMask =
     include Storage
     type t
     val mask : storage
-    val highest : storage
-    val lowest : storage
-    val topbit : int
-    val shifts : (int * int) list
   end
 
 (* ********************************************************************************************** *
@@ -115,20 +111,57 @@ module Make(Mask : BitMask) =
     type t = Mask.storage
 
     (* ****************************************************************************************** *
-     * While virtually everything else has to provided in the functor (highest, lowest, etc.),    *
-     * requiring Mask.shifts to be entered twice seemed a step too far...                         *
+     * Convert the supplied mask in the functor into the various required values.                 *
      * ****************************************************************************************** *)
-    let shiftsInv = List.rev Mask.shifts
-
-    (* ****************************************************************************************** *
-     * Prior to 1.1.0, Masks.shifts was incorrectly used by all functions except storage_of_flag  *
-     * when Mask.lowest <> Mask.one. In this case, the first shift should be ignored, because     *
-     * Mask.lowest has already taken it into account.                                             *
-     * ****************************************************************************************** *)
-    let shifts =
-      match Mask.shifts with
-        (0, _)::shifts -> shifts
-      | _ -> Mask.shifts
+    let (storage_of_flag, shifts, shiftsInv, topbit, highest, lowest) =
+      let (shifts, shiftsInv, topbit, highest, lowest) =
+        let rec f shiftsInv topbit highest lowest l c i =
+          let v = Mask.shift_left Mask.one i
+          in
+            if i > 0 && Mask.compare v Mask.one = 0
+            then (List.rev shiftsInv, shiftsInv, topbit, highest, lowest)
+            else if Mask.compare (Mask.logand v Mask.mask) Mask.zero <> 0
+                 then let shiftsInv =
+                        if l > 0
+                        then (c, l)::shiftsInv
+                        else shiftsInv
+                      in
+                        if Mask.compare lowest Mask.zero = 0
+                        then f shiftsInv 0 v v 0 0 (succ i)
+                        else f shiftsInv (succ topbit) v lowest 0 0 (succ i)
+                 else if l > 0
+                      then f shiftsInv topbit highest lowest (succ l) c (succ i)
+                      else f shiftsInv topbit highest lowest 1 (succ topbit) (succ i)
+        in
+          f [] (-1) Mask.zero Mask.zero 0 0 0
+      in
+        let compute_shift shifts offset =
+          let rec f a = function
+            (point, amount)::shifts ->
+              if offset >= point
+              then f (a + amount) shifts
+              else a
+          | [] ->
+              a
+          in
+            f offset shifts
+        in
+          let (storage_of_flag, shifts) =
+            match shifts with
+              [] ->
+                ((fun (flag : Mask.t) -> Mask.shift_left Mask.one (Obj.magic flag : int)), [])
+            | [(0, n)] ->
+                ((fun (flag : Mask.t) -> Mask.shift_left Mask.one (n + (Obj.magic flag : int))), [])
+            | (0, n)::shifts ->
+                ((fun (flag : Mask.t) ->
+                  let shift = n + compute_shift shifts (Obj.magic flag : int)
+                  in
+                    Mask.shift_left Mask.one shift), shifts)
+            | _ ->
+                ((fun (flag : Mask.t) ->
+                  Mask.shift_left Mask.one (compute_shift shifts (Obj.magic flag : int))), shifts)
+      in
+        (storage_of_flag, shifts, shiftsInv, topbit, highest, lowest)
 
     (* ****************************************************************************************** *
      * create, invalid, empty and is_empty are straightforward.                                   *
@@ -136,39 +169,13 @@ module Make(Mask : BitMask) =
     let create mask =
       mask
 
-    let invalid mask =
-      Mask.logand (Mask.lognot Mask.mask) mask
+    let invalid set =
+      Mask.logand (Mask.lognot Mask.mask) set
 
     let empty = Mask.zero
 
-    let is_empty mask =
-      (Mask.compare mask Mask.zero = 0)
-
-    (* ****************************************************************************************** *
-     * compute_shift converts a constructor index to a bit number, taking Mask.shifts into        *
-     * account. It's short-circuited as the identity function for the common case of no shifts.   *
-     * ****************************************************************************************** *)
-    let compute_shift =
-      if Mask.shifts = []
-      then fun x -> x
-      else fun offset ->
-             let rec f a = function
-               (point, amount)::shifts ->
-                 if offset >= point
-                 then f (a + amount) shifts
-                 else a
-             | [] ->
-                 a
-             in
-               f offset Mask.shifts
-
-    (* ****************************************************************************************** *
-     * Convert a constructor to a bit.                                                            *
-     * ****************************************************************************************** *)
-    let storage_of_flag (flag : Mask.t) =
-      let shift = compute_shift (Obj.magic flag : int)
-      in
-        (Mask.shift_left Mask.one shift)
+    let is_empty set =
+      (Mask.compare set Mask.zero = 0)
 
     (* ****************************************************************************************** *
      * Another sequence of straightforward functions.                                             *
@@ -248,7 +255,7 @@ module Make(Mask : BitMask) =
           in
             if Mask.compare (Mask.logand set v) Mask.zero <> 0 && g elt
             then elt
-            else if Mask.compare v Mask.highest = 0
+            else if Mask.compare v highest = 0
                  then raise Not_found
                  else let i = succ i
                       in
@@ -256,7 +263,7 @@ module Make(Mask : BitMask) =
                         in
                           f i (Mask.shift_left v shift) s
         in
-          f 0 Mask.lowest shifts
+          f 0 lowest shifts
 
     let find_first_opt g set =
       let set = Mask.logand set Mask.mask
@@ -266,7 +273,7 @@ module Make(Mask : BitMask) =
           in
             if Mask.compare (Mask.logand set v) Mask.zero <> 0 && g elt
             then Some elt
-            else if Mask.compare v Mask.highest = 0
+            else if Mask.compare v highest = 0
                  then None
                  else let i = succ i
                       in
@@ -274,7 +281,7 @@ module Make(Mask : BitMask) =
                         in
                           f i (Mask.shift_left v shift) s
         in
-          f 0 Mask.lowest shifts
+          f 0 lowest shifts
 
     let find_last g set =
       let set = Mask.logand set Mask.mask
@@ -292,7 +299,7 @@ module Make(Mask : BitMask) =
                           f i (Mask.shift_right_logical v shift) s
           else raise Not_found
         in
-          f Mask.topbit Mask.highest shiftsInv
+          f topbit highest shiftsInv
 
     let find_last_opt g set =
       let set = Mask.logand set Mask.mask
@@ -310,7 +317,7 @@ module Make(Mask : BitMask) =
                           f i (Mask.shift_right_logical v shift) s
           else None
         in
-          f Mask.topbit Mask.highest shiftsInv
+          f topbit highest shiftsInv
 
     let iter g set =
       let set = Mask.logand set Mask.mask
@@ -320,14 +327,14 @@ module Make(Mask : BitMask) =
             if Mask.compare (Mask.logand set v) Mask.zero <> 0
             then g (Obj.magic i : Mask.t)
           in
-            if Mask.compare v Mask.highest <> 0
+            if Mask.compare v highest <> 0
             then let i = succ i
                  in
                    let (shift, s) = deltaShift i s
                    in
                      f i (Mask.shift_left v shift) s
         in
-          f 0 Mask.lowest shifts
+          f 0 lowest shifts
 
     let fold g set acc =
       let set = Mask.logand set Mask.mask
@@ -338,7 +345,7 @@ module Make(Mask : BitMask) =
             then g (Obj.magic i : Mask.t) a
             else a
           in
-            if Mask.compare v Mask.highest <> 0
+            if Mask.compare v highest <> 0
             then let i = succ i
                  in
                    let (shift, s) = deltaShift i s
@@ -346,13 +353,13 @@ module Make(Mask : BitMask) =
                      f a i (Mask.shift_left v shift) s
             else a
         in
-          f acc 0 Mask.lowest shifts
+          f acc 0 lowest shifts
 
     let map g set' =
       let set = Mask.logand set' Mask.mask
       in
         let rec f a i v s =
-          if Mask.compare v Mask.highest <> 0
+          if Mask.compare v highest <> 0
           then let a =
                  if Mask.compare (Mask.logand set v) Mask.zero <> 0
                  then Mask.logor a (storage_of_flag (g (Obj.magic i : Mask.t)))
@@ -366,14 +373,14 @@ module Make(Mask : BitMask) =
                then set'
                else a
         in
-          f Mask.zero 0 Mask.lowest shifts
+          f Mask.zero 0 lowest shifts
 
     let for_all p set =
       let set = Mask.logand set Mask.mask
       in
         let rec f i v s =
           if Mask.compare (Mask.logand set v) Mask.zero = 0 || p (Obj.magic i : Mask.t)
-          then if Mask.compare v Mask.highest <> 0
+          then if Mask.compare v highest <> 0
                then let i = succ i
                     in
                       let (shift, s) = deltaShift i s
@@ -382,14 +389,14 @@ module Make(Mask : BitMask) =
                else true
           else false
         in
-          f 0 Mask.lowest shifts
+          f 0 lowest shifts
 
     let exists p set =
       let set = Mask.logand set Mask.mask
       in
         let rec f i v s =
           if Mask.compare (Mask.logand set v) Mask.zero = 0 || not (p (Obj.magic i : Mask.t))
-          then if Mask.compare v Mask.highest <> 0
+          then if Mask.compare v highest <> 0
                then let i = succ i
                     in
                       let (shift, s) = deltaShift i s
@@ -398,7 +405,7 @@ module Make(Mask : BitMask) =
                else false
           else true
         in
-          f 0 Mask.lowest shifts
+          f 0 lowest shifts
 
     let filter p set =
       let set = Mask.logand set Mask.mask
@@ -409,7 +416,7 @@ module Make(Mask : BitMask) =
             then Mask.logor a v
             else a
           in
-            if Mask.compare v Mask.highest <> 0
+            if Mask.compare v highest <> 0
             then let i = succ i
                  in
                    let (shift, s) = deltaShift i s
@@ -417,7 +424,7 @@ module Make(Mask : BitMask) =
                      f a i (Mask.shift_left v shift) s
             else a
         in
-          f Mask.zero 0 Mask.lowest shifts
+          f Mask.zero 0 lowest shifts
 
     let partition p set =
       let set = Mask.logand set Mask.mask
@@ -430,7 +437,7 @@ module Make(Mask : BitMask) =
                  else (l, Mask.logor r v)
             else a
           in
-            if Mask.compare v Mask.highest <> 0
+            if Mask.compare v highest <> 0
             then let i = succ i
                  in
                    let (shift, s) = deltaShift i s
@@ -438,7 +445,7 @@ module Make(Mask : BitMask) =
                      f a i (Mask.shift_left v shift) s
             else a
         in
-          f (Mask.zero, Mask.zero) 0 Mask.lowest shifts
+          f (Mask.zero, Mask.zero) 0 lowest shifts
 
     let cardinal set =
       let set = Mask.logand set Mask.mask
@@ -449,11 +456,11 @@ module Make(Mask : BitMask) =
             then succ a
             else a
           in
-            if Mask.compare v Mask.highest = 0
+            if Mask.compare v highest = 0
             then a
             else f a (succ i) (Mask.shift_left v 1)
         in
-          f 0 0 Mask.lowest
+          f 0 0 lowest
 
     let elements set =
       let set = Mask.logand set Mask.mask
@@ -471,7 +478,7 @@ module Make(Mask : BitMask) =
                    f a i (Mask.shift_right_logical v shift) s
           else a
         in
-          f [] Mask.topbit Mask.highest shiftsInv
+          f [] topbit highest shiftsInv
 
     let min_elt set =
       let set = Mask.logand set Mask.mask
@@ -479,7 +486,7 @@ module Make(Mask : BitMask) =
         let rec f i v s =
           if Mask.compare (Mask.logand v set) Mask.zero <> 0
           then (Obj.magic i : Mask.t)
-          else if Mask.compare v Mask.highest <> 0
+          else if Mask.compare v highest <> 0
                then let i = succ i
                     in
                       let (shift, s) = deltaShift i s
@@ -487,7 +494,7 @@ module Make(Mask : BitMask) =
                         f i (Mask.shift_left v shift) s
                else raise Not_found
         in
-          f 0 Mask.lowest shifts
+          f 0 lowest shifts
 
     let min_elt_opt set =
       let set = Mask.logand set Mask.mask
@@ -495,7 +502,7 @@ module Make(Mask : BitMask) =
         let rec f i v s =
           if Mask.compare (Mask.logand v set) Mask.zero <> 0
           then Some (Obj.magic i : Mask.t)
-          else if Mask.compare v Mask.highest = 0
+          else if Mask.compare v highest = 0
                then let i = succ i
                     in
                       let (shift, s) = deltaShift i s
@@ -503,7 +510,7 @@ module Make(Mask : BitMask) =
                         f i (Mask.shift_left v shift) s
                else None
         in
-          f 0 Mask.lowest shifts
+          f 0 lowest shifts
 
     let max_elt set =
       let set = Mask.logand set Mask.mask
@@ -519,7 +526,7 @@ module Make(Mask : BitMask) =
                         f i (Mask.shift_right_logical v shift) s
           else raise Not_found
         in
-          f Mask.topbit Mask.highest shiftsInv
+          f topbit highest shiftsInv
 
     let max_elt_opt set =
       let set = Mask.logand set Mask.mask
@@ -535,7 +542,7 @@ module Make(Mask : BitMask) =
                         f i (Mask.shift_right_logical v shift) s
           else None
         in
-          f Mask.topbit Mask.highest shiftsInv
+          f topbit highest shiftsInv
 
     let choose = min_elt
 
@@ -557,7 +564,7 @@ module Make(Mask : BitMask) =
                         else (l, p, Mask.logor v r)
             else a
           in
-            if Mask.compare v Mask.highest <> 0
+            if Mask.compare v highest <> 0
             then let i = succ i
                  in
                    let (shift, s) = deltaShift i s
@@ -565,5 +572,5 @@ module Make(Mask : BitMask) =
                      f a i (Mask.shift_left v shift) s
             else a
         in
-          f (Mask.zero, false, Mask.zero) 0 Mask.lowest shifts
+          f (Mask.zero, false, Mask.zero) 0 lowest shifts
   end

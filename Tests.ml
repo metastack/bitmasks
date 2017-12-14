@@ -46,10 +46,6 @@ module BMBasic : T =
         type t = elt
 
         let mask = 0b11111L
-        let lowest = 0b1L
-        let highest = 0b10000L
-        let topbit = 4
-        let shifts = []
 
         include BitMaskSet.Int64
       end
@@ -66,10 +62,6 @@ module BMEvil : T =
         type t = elt
 
         let mask = 0b1100000100110L
-        let lowest = 0b10L
-        let highest = 0b1000000000000L
-        let topbit = 4
-        let shifts = [(0, 1); (2, 2); (3, 5)]
 
         include BitMaskSet.Int64
       end
@@ -86,10 +78,6 @@ module BMDevil : T =
         type t = elt
 
         let mask = 0b1100000000000000000000000000000000000000000000000000000000100110L
-        let lowest = 0b10L
-        let highest = 0b1000000000000000000000000000000000000000000000000000000000000000L
-        let topbit = 4
-        let shifts = [(0, 1); (2, 2); (3, 56)]
 
         include BitMaskSet.Int64
       end
