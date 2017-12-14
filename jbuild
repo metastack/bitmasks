@@ -42,3 +42,23 @@
   ((name   runtest)
    (deps   (example.exe))
    (action (run ${<}))))
+
+(executable
+  ((name      Tests)
+   (modules   (Tests))
+   (libraries (bitmasks))))
+
+(alias
+  ((name   runtest)
+   (deps   (Tests.exe Tests.reference))
+   (action (progn (with-stdout-to Tests.result (run ${<} test.cudf))
+                  (system "diff ${read:DiffFlags.sexp}Tests.result Tests.reference")))))
+
+(rule
+  ((targets (DiffFlags.sexp))
+   (deps    (DiffFlags.ml))
+   (action  (with-stdout-to ${@} (run ocaml DiffFlags.ml)))))
+
+(rule
+  ((targets (DiffFlags.ml))
+   (action  (with-stdout-to ${@} (echo "if not Sys.unix then print_string \"--ignore-trailing-space \"")))))
