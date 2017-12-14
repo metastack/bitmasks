@@ -77,6 +77,26 @@ module BMEvil : T =
     include BitMaskSet.Make(BM)
   end
 
+module BMDevil : T =
+  struct
+    type elt = t
+
+    module BM =
+      struct
+        type t = elt
+
+        let mask = 0b1100000000000000000000000000000000000000000000000000000000100110L
+        let lowest = 0b10L
+        let highest = 0b1000000000000000000000000000000000000000000000000000000000000000L
+        let topbit = 4
+        let shifts = [(0, 1); (2, 2); (3, 56)]
+
+        include BitMaskSet.Int64
+      end
+
+    include BitMaskSet.Make(BM)
+  end
+
 let verify msg test =
   let outcome =
     try
@@ -151,6 +171,8 @@ module Make(T : T) =
 
 module Basic = Make(BMBasic)
 module Evil = Make(BMEvil)
+module Devil = Make(BMDevil)
 
 let () = Basic.test "Basic bitmask"
 let () = Evil.test "Evil bitmask"
+let () = Devil.test "Devilish bitmask"
