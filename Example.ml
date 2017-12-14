@@ -37,7 +37,7 @@ module BMSet =
         let mask = 0b1100000100011
         let lowest = 0b1
         let highest = 0b1000000000000
-        let topbit = 12
+        let topbit = 4
         let shifts = [(2, 3); (3, 5)]
 
         include BitMaskSet.Int

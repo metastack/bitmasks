@@ -68,9 +68,6 @@ module BMEvil : T =
         let mask = 0b1100000100011L
         let lowest = 0b1L
         let highest = 0b1000000000000L
-        (* According to the documentation, this should be 12, but the documentation is wrong!
-         * topbit in fact should be the integer number of the last constructor in the variant.
-         *)
         let topbit = 4
         let shifts = [(2, 3); (3, 5)]
 

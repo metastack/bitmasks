@@ -137,7 +137,7 @@ module type BitMask =
        - [mask = 0b1100000100011]
        - [highest = 0b1000000000000]
        - [lowest = 0b1]
-       - [topbit = 12]
+       - [topbit = 4]
        - [shifts = [(2, 3); (3, 5)]]
      *)
 
@@ -161,8 +161,9 @@ module type BitMask =
 
     val topbit : int
     (**
-       The numeric value of the position of the highest valid bit. For example, if {!highest} is
-       [0b10000] then [topbit] is [4]. 
+       The numeric value of the highest valid constant constructor in the sum type (essentially, one
+       less than the number of 1s in {!mask}). This was incorrectly defined as the value of the
+       topmost valid bit in 1.0.0 (hence the strange name).
      *)
 
     val shifts : (int * int) list
