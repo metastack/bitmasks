@@ -1,4 +1,4 @@
-????-??-?? David Allsopp <david.allsopp -at- metastack.dot.com>
+2017-12-15 David Allsopp <david.allsopp -at- metastack.dot.com>
   Version 1.1.0
 * Switch build system to Jbuilder
 * Ensure physical equality maintained in add and remove (as in OCaml 4.03.0)
