@@ -7,10 +7,7 @@ homepage: "https://metastack.github.io/bitmasks"
 dev-repo: "https://github.com/metastack/bitmasks.git"
 bug-reports: "https://github.com/metastack/bitmasks/issues"
 build: [ "jbuilder" "build" "@install" ]
-build-doc: [
-  ["jbuilder" "build" "@doc"]
-  ["cp" "-r" "_build/default/_doc/bitmasks" "_build/default/_doc/index.html" "_build/default/_doc/odoc.css" "%{doc}%/"]
-]
+build-doc: [make "doc"]
 build-test: ["jbuilder" "runtest"]
 depends: [
   "jbuilder" {build}
