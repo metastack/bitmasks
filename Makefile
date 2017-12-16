@@ -31,16 +31,8 @@ JBUILDER=jbuilder
 build:
 	$(JBUILDER) build @install
 
-bitmasks.install:
-	$(JBUILDER) build $@
-
-doc: bitmasks.install
+doc:
 	$(JBUILDER) build @doc
-	@sed -e '$$d' $< | fgrep -v _doc > $<.tmp
-	@find _build/default/_doc -type f -not -name .jbuilder-keep | \
-    sed -e 's/.*/  "\0"/' -e 's/_doc\/bitmasks\/\(.*\/.*\)/\0 {"\1}/' >> $<.tmp
-	@echo ']' >> $<.tmp
-	@mv $<.tmp $<
 
 test:
 	$(JBUILDER) runtest
