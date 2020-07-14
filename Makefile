@@ -3,7 +3,7 @@
 # ################################################################################################ #
 # BitMask Sets                                                                                     #
 # ################################################################################################ #
-# Copyright (c) 2013-17 MetaStack Solutions Ltd.                                                   #
+# Copyright (c) 2013-20 MetaStack Solutions Ltd.                                                   #
 # ################################################################################################ #
 # Author: David Allsopp                                                                            #
 # 27-Dec-2013                                                                                      #
@@ -26,41 +26,41 @@
 # of this software, even if advised of the possibility of such damage.                             #
 # ################################################################################################ #
 
-JBUILDER=jbuilder
+DUNE=dune
 
 build:
-	$(JBUILDER) build @install
+	$(DUNE) build @install
 
 bitmasks.install:
-	$(JBUILDER) build $@
+	$(DUNE) build $@ --promote-install-files
 
 doc: bitmasks.install
-	$(JBUILDER) build @doc
+	$(DUNE) build @doc
 	@sed -e '$$d' $< | fgrep -v _doc > $<.tmp
-	@find _build/default/_doc -type f -not -name .jbuilder-keep | \
-    sed -e 's/.*/  "\0"/' -e 's/_doc\/\(.*\/.*\)/\0 {"\1}/' >> $<.tmp
+	@find _build/default/_doc/_html -type f -not -name .dune-keep | \
+    sed -e 's/.*/  "\0"/' -e 's|_doc/_html/\(.*/.*\)|\0 {"\1}|' >> $<.tmp
 	@echo ']' >> $<.tmp
 	@mv $<.tmp $<
 
 test:
-	$(JBUILDER) runtest
+	$(DUNE) runtest
 
 all: build doc test
 
 install:
-	$(JBUILDER) install $(INSTALLFLAGS)
+	$(DUNE) install $(INSTALLFLAGS)
 
 uninstall:
-	$(JBUILDER) uninstall $(UNINSTALLFLAGS)
+	$(DUNE) uninstall $(UNINSTALLFLAGS)
 
 reinstall:
-	$(JBUILDER) uninstall $(REINSTALLFLAGS)
-	$(JBUILDER) install $(REINSTALLFLAGS)
+	$(DUNE) uninstall $(REINSTALLFLAGS)
+	$(DUNE) install $(REINSTALLFLAGS)
 
 clean:
-	$(JBUILDER) clean
+	$(DUNE) clean
 
 distclean:
-	$(JBUILDER) clean
+	$(DUNE) clean
 
 .PHONY: build doc test all install uninstall reinstall clean distclean

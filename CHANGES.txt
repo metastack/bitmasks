@@ -1,3 +1,7 @@
+????-??-?? David Allsopp <david.allsopp -at- metastack.dot.com>
+  Version 1.2.0
+* Migrate build system to Dune
+
 2017-12-15 David Allsopp <david.allsopp -at- metastack.dot.com>
   Version 1.1.0
 * Switch build system to Jbuilder
