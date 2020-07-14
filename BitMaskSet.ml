@@ -44,6 +44,10 @@ module type S =
     val find_last : (elt -> bool) -> t -> elt
     val find_last_opt : (elt -> bool) -> t -> elt option
     val of_list : elt list -> t
+    val to_seq_from : elt -> t -> elt Seq.t
+    val to_seq : t -> elt Seq.t
+    val add_seq : elt Seq.t -> t -> t
+    val of_seq : elt Seq.t -> t
 
     type storage
 
@@ -573,4 +577,30 @@ module Make(Mask : BitMask) =
             else a
         in
           f (Mask.zero, false, Mask.zero) 0 lowest shifts
+
+    let to_seq_from x set =
+      let set = Mask.logand set Mask.mask
+      and x = (Obj.magic x : int)
+      in
+        let rec f i v s () =
+          let tail =
+            if Mask.compare v highest = 0
+            then Seq.empty
+            else let j = succ i
+                 in
+                   let (shift, s) = deltaShift j s
+                   in
+                     f j (Mask.shift_left v shift) s
+          in
+            if i >= x && Mask.compare (Mask.logand v set) Mask.zero <> 0
+            then Seq.Cons((Obj.magic i : Mask.t), tail)
+            else tail ()
+        in
+          f 0 lowest shifts
+
+    let to_seq set = to_seq_from (Obj.magic 0 : Mask.t) set
+
+    let add_seq s set = Seq.fold_left (fun set flag -> add flag set) set s
+
+    let of_seq s = add_seq s empty
   end

@@ -2,6 +2,8 @@
   Version 1.2.0
 * Migrate build system to Dune
 * Use stdlib-shims
+* Add missing Seq.t functions introduced in OCaml 4.07.0 (using seq package for compatibility with
+  OCaml 4.06.1 and earlier)
 
 2017-12-15 David Allsopp <david.allsopp -at- metastack.dot.com>
   Version 1.1.0

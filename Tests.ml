@@ -145,16 +145,20 @@ module Make(T : T) =
       (fun () -> T.find_first_opt f set = None)
         |> verify "find_first_opt returns None for Not_found";
       (fun () -> T.find_last_opt f set = None) |> verify "find_last_opt returns None for Not_found";
-      let c_sing = T.add C T.empty in
-      let e_sing = T.add E T.empty in
-      let set = T.add A (T.add C e_sing) in
+      let set_c = T.add C T.empty in
+      let set_e = T.add E T.empty in
+      let set_c_e = T.add C set_e in
+      let set = T.add A set_c_e in
       let is_e = function E -> true | _ -> false in
       let is_not_e = function E -> true | _ -> false in
-      (fun () -> T.split C set = (T.add A T.empty, true, e_sing)) |> verify "split";
+      (fun () -> T.split C set = (T.add A T.empty, true, set_e)) |> verify "split";
       (fun () -> T.exists is_e set) |> verify "exists";
       (fun () -> T.for_all is_not_e set = false) |> verify "for_all";
-      (fun () -> T.filter is_e set = e_sing) |> verify "filter";
-      (fun () -> T.partition is_e set = (e_sing, T.add A c_sing)) |> verify "partition"
+      (fun () -> T.filter is_e set = set_e) |> verify "filter";
+      (fun () -> T.partition is_e set = (set_e, T.add A set_c)) |> verify "partition";
+      (fun () -> T.equal (T.of_seq (T.to_seq set)) set) |> verify "of_seq / to_seq";
+      (fun () -> T.equal (T.add_seq (Seq.return C) set_e) set_c_e) |> verify "add_seq";
+      (fun () -> T.to_seq_from C set |> Seq.fold_left (fun a e -> e::a) [] = [E; C]) |> verify "to_seq_from"
   end
 
 module Basic = Make(BMBasic)

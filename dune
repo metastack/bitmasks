@@ -31,7 +31,7 @@
  (public_name bitmasks)
  (synopsis    "BitMasks over int and int64 exposed as sets")
  (modules     BitMaskSet)
- (libraries   stdlib-shims)
+ (libraries   stdlib-shims seq)
  (wrapped     false))
 
 (executable

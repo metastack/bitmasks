@@ -29,6 +29,9 @@ exists: PASSED
 for_all: PASSED
 filter: PASSED
 partition: PASSED
+of_seq / to_seq: PASSED
+add_seq: PASSED
+to_seq_from: PASSED
 Testing Evil bitmask...
 Physical equality on add: PASSED
 Physical equality on remove: PASSED
@@ -60,6 +63,9 @@ exists: PASSED
 for_all: PASSED
 filter: PASSED
 partition: PASSED
+of_seq / to_seq: PASSED
+add_seq: PASSED
+to_seq_from: PASSED
 Testing Devilish bitmask...
 Physical equality on add: PASSED
 Physical equality on remove: PASSED
@@ -91,3 +97,6 @@ exists: PASSED
 for_all: PASSED
 filter: PASSED
 partition: PASSED
+of_seq / to_seq: PASSED
+add_seq: PASSED
+to_seq_from: PASSED
