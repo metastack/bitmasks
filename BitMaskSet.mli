@@ -75,6 +75,14 @@ module type S =
      * ****************************************************************************************** *)
     val of_list : elt list -> t
 
+    (* ****************************************************************************************** *
+     * Added in 4.07.0.                                                                           *
+     * ****************************************************************************************** *)
+    val to_seq_from : elt -> t -> elt Seq.t
+    val to_seq : t -> elt Seq.t
+    val add_seq : elt Seq.t -> t -> t
+    val of_seq : elt Seq.t -> t
+
     (**/**)
 
     type storage
@@ -386,6 +394,36 @@ module Make (Mask : BitMask) :
     (**
        [of_list l] creates a bitmask from a list of elements. For bitmasks, this is just a
        convenience vs folding {!add} over the list.
+     *)
+
+    val to_seq_from : Mask.t -> t -> Mask.t Seq.t
+    (**
+       [to_seq_from x s] returns the sequence of elements of [s] which are greater than or equal to
+       [x].
+
+       @since 1.2.0
+     *)
+
+    val to_seq : t -> Mask.t Seq.t
+    (**
+       [to_seq s] returns the sequence of all elements of the given bitmask in increasing order
+       with respect to the bit number (i.e. the constructor position with type [Mask.t]).
+
+       @since 1.2.0
+      *)
+
+    val add_seq : Mask.t Seq.t -> t -> t
+    (**
+       [add_seq seq s] adds the given sequence of elements to the bitmask [s], in order.
+
+       @since 1.2.0
+     *)
+
+    val of_seq : Mask.t Seq.t -> t
+    (**
+       [of_seq seq] creates a bitmask from a sequence of elements.
+
+       @since 1.2.0
      *)
   end
 (**
