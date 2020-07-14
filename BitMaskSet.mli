@@ -164,6 +164,7 @@ module Make (Mask : BitMask) :
   sig
     type storage = Mask.storage
     (** The underlying storage type. *)
+
     type t = Mask.storage
     (**
        The type of bitmasks. This is separate from {!storage} as it will typically be exposed as a
