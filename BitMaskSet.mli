@@ -83,6 +83,11 @@ module type S =
     val add_seq : elt Seq.t -> t -> t
     val of_seq : elt Seq.t -> t
 
+    (* ****************************************************************************************** *
+     * Added in 4.08.0.                                                                           *
+     * ****************************************************************************************** *)
+    val disjoint : t -> t -> bool
+
     (**/**)
 
     type storage
@@ -220,6 +225,14 @@ module Make (Mask : BitMask) :
 
     val inter : Mask.storage -> Mask.storage -> Mask.storage
     (** Bitmask intersection (invalid bits are included). *)
+
+    val disjoint : Mask.storage -> Mask.storage -> bool
+    (**
+       [disjoint a b] is true if [a] and [b] have no elements in common. The presence of invalid
+       bits may make two otherwise disjoint sets intersecting.
+
+       @since 1.2.0
+     *)
 
     val diff : Mask.storage -> Mask.storage -> Mask.storage
     (** Bitmask difference (invalid bits are included). *)

@@ -48,6 +48,7 @@ module type S =
     val to_seq : t -> elt Seq.t
     val add_seq : elt Seq.t -> t -> t
     val of_seq : elt Seq.t -> t
+    val disjoint : t -> t -> bool
 
     type storage
 
@@ -219,6 +220,9 @@ module Make(Mask : BitMask) =
     let union = Mask.logor
 
     let inter = Mask.logand
+
+    let disjoint a b =
+      Mask.logand a b = Mask.zero
 
     let diff a b =
       Mask.logand b (Mask.lognot a)
