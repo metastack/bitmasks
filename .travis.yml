@@ -26,7 +26,7 @@
 # of this software, even if advised of the possibility of such damage.                             #
 # ################################################################################################ #
 
-sudo: required
+dist: bionic
 language: c
 install: wget https://raw.githubusercontent.com/ocaml/ocaml-ci-scripts/master/.travis-opam.sh
 script: bash -ex .travis-opam.sh
