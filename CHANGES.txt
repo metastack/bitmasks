@@ -4,6 +4,7 @@
 * Use stdlib-shims
 * Add missing Seq.t functions introduced in OCaml 4.07.0 (using seq package for compatibility with
   OCaml 4.06.1 and earlier)
+* Add missing disjoint function introduced in OCaml 4.08.0
 
 2017-12-15 David Allsopp <david.allsopp -at- metastack.dot.com>
   Version 1.1.0
