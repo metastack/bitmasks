@@ -136,7 +136,7 @@ module Make(T : T) =
       let set = T.add D (T.add C T.empty) in
       (fun () -> T.fold (fun _ -> succ) set 0 = 2) |> verify "fold";
       (fun () -> (let x = ref 0 in T.iter (fun _ -> incr x) set; !x) = 2) |> verify "iter";
-      let f = T.(function D | E -> false | _ -> true) in
+      let f = function D | E -> false | _ -> true in
       (fun () -> T.find_first f set = C) |> verify "find_first";
       (fun () -> T.find_last f set = C) |> verify "find_last";
       (fun () -> T.find_first_opt f set = Some C) |> verify "find_first_opt";
