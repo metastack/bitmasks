@@ -1,6 +1,7 @@
 ????-??-?? David Allsopp <david.allsopp -at- metastack.dot.com>
   Version 1.2.0
 * Migrate build system to Dune
+* Use stdlib-shims
 
 2017-12-15 David Allsopp <david.allsopp -at- metastack.dot.com>
   Version 1.1.0

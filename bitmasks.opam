@@ -12,6 +12,7 @@ build: [
 ]
 depends: [
   "dune" {>= "1.0"}
+  "stdlib-shims"
   "odoc" {with-doc}
 ]
 synopsis: "BitMasks over int and int64 exposed as sets"

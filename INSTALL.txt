@@ -6,6 +6,7 @@ Dependencies
 In order to compile this package, you will need:
 
 * ocaml (>= 4.02.3)
+* stdlib-shims
 * dune
 
 Installing
