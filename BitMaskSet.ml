@@ -555,7 +555,7 @@ module Make(Mask : BitMask) =
         let rec f ((l, p, r) as a) i v s =
           let a =
             if Mask.compare (Mask.logand v set) Mask.zero <> 0
-            then let c = Pervasives.compare i flag
+            then let c = Stdlib.compare i flag
                  in
                    if c = 0
                    then (l, true, r)
