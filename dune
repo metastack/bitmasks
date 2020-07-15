@@ -65,4 +65,5 @@
 
 (rule
  (targets DiffFlags.ml)
- (action  (with-stdout-to %{targets} (echo "if not Sys.unix then print_string \"--ignore-trailing-space \""))))
+ (action  (with-stdout-to %{targets}
+                          (echo "if not Sys.unix then print_string \"--ignore-trailing-space \""))))
