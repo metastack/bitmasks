@@ -63,4 +63,16 @@ clean:
 distclean:
 	$(DUNE) clean
 
-.PHONY: build doc test all install uninstall reinstall clean distclean
+clean-working-dir:
+	@test -z "$$(git status --porcelain)"
+
+gh-pages: doc clean-working-dir
+	rm -rf doc-temp
+	opam-installer --prefix=doc-temp bitmasks.install
+	rm -f doc-temp/doc/bitmasks/CHANGES.txt doc-temp/doc/bitmasks/README.md
+	git checkout gh-pages
+	cp -a doc-temp/doc/bitmasks/* .
+	rm -rf doc-temp
+	git add -N .
+
+.PHONY: build doc test all install uninstall reinstall clean distclean gh-pages clean-working-dir
