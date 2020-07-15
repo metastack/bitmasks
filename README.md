@@ -1,3 +1,5 @@
+![CI](https://github.com/metastack/bitmasks/workflows/CI/badge.svg)
+
 BitMasks Sets
 =============
 
