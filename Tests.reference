@@ -3,6 +3,8 @@ Physical equality on add: PASSED
 Physical equality on remove: PASSED
 Physical equality on map: PASSED
 Physical equality on mapping empty set: PASSED
+filter_map: PASSED
+Physical equality on filter_map: PASSED
 elements: PASSED
 cardinal: PASSED
 min_elt raises Not_found for empty: PASSED
@@ -37,6 +39,8 @@ Physical equality on add: PASSED
 Physical equality on remove: PASSED
 Physical equality on map: PASSED
 Physical equality on mapping empty set: PASSED
+filter_map: PASSED
+Physical equality on filter_map: PASSED
 elements: PASSED
 cardinal: PASSED
 min_elt raises Not_found for empty: PASSED
@@ -71,6 +75,8 @@ Physical equality on add: PASSED
 Physical equality on remove: PASSED
 Physical equality on map: PASSED
 Physical equality on mapping empty set: PASSED
+filter_map: PASSED
+Physical equality on filter_map: PASSED
 elements: PASSED
 cardinal: PASSED
 min_elt raises Not_found for empty: PASSED

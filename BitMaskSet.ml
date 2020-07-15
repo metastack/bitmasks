@@ -34,6 +34,7 @@ module type S =
     include Set.S
 
     val map : (elt -> elt) -> t -> t
+    val filter_map : (elt -> elt option) -> t -> t
     val min_elt_opt : t -> elt option
     val max_elt_opt : t -> elt option
     val choose_opt : t -> elt option
@@ -377,6 +378,28 @@ module Make(Mask : BitMask) : sig
           then let a =
                  if Mask.compare (Mask.logand set v) Mask.zero <> 0
                  then Mask.logor a (storage_of_flag (g (Obj.magic i : Mask.t)))
+                 else a
+               and i = succ i
+               in
+                 let (shift, s) = deltaShift i s
+                 in
+                   f a i (Mask.shift_left v shift) s
+          else if Mask.compare a set' = 0
+               then set'
+               else a
+        in
+          f Mask.zero 0 lowest shifts
+
+    let filter_map g set' =
+      let set = Mask.logand set' Mask.mask
+      in
+        let rec f a i v s =
+          if Mask.compare v highest <> 0
+          then let a =
+                 if Mask.compare (Mask.logand set v) Mask.zero <> 0
+                 then match g (Obj.magic i : Mask.t) with
+                        Some flag -> Mask.logor a (storage_of_flag flag)
+                      | None -> Mask.logand set (Mask.lognot v)
                  else a
                and i = succ i
                in
