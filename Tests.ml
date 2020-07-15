@@ -117,6 +117,12 @@ module Make(T : T) =
       (fun () -> T.map (function x -> x) set == set) |> verify "Physical equality on map";
       (fun () -> T.map (function x -> x) T.empty == T.empty)
         |> verify "Physical equality on mapping empty set";
+      let set_a_c = T.add C set in
+      let set_a_b = T.add B set in
+      (fun () -> T.filter_map (function C -> Some B | x -> Some x) set_a_c = set_a_b)
+        |> verify "filter_map";
+      (fun () -> T.filter_map (fun x -> Some x) set == set)
+        |> verify "Physical equality on filter_map";
       let set = T.add E set in
       (fun () -> T.elements set = [A; E]) |> verify "elements";
       (fun () -> T.cardinal set = 2) |> verify "cardinal";

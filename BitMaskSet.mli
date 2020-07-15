@@ -50,6 +50,11 @@ module type S =
     val map : (elt -> elt) -> t -> t
 
     (* ****************************************************************************************** *
+     * Added in 4.11.0.                                                                           *
+     * ****************************************************************************************** *)
+    val filter_map : (elt -> elt option) -> t -> t
+
+    (* ****************************************************************************************** *
      * Added in 4.05.0.                                                                           *
      * ****************************************************************************************** *)
     val min_elt_opt : t -> elt option
@@ -272,6 +277,15 @@ module Make (Mask : BitMask) :
        If no element of [s] is changed by [f], [s] is returned unchanged.
       
        @since 1.1.0
+     *)
+
+    val filter_map : (Mask.t -> Mask.t option) -> Mask.storage -> Mask.storage
+    (**
+       [filter_map f s] is the bitmask of all [v] such that [f x = Some v] for some bit [x] of [s].
+
+       If no element of [s] is changed by [f], [s] is returned unchanged.
+
+       @since 1.3.0
      *)
 
     val fold : (Mask.t -> 'a -> 'a) -> Mask.storage -> 'a -> 'a
