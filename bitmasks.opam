@@ -11,7 +11,8 @@ build: [
   [ make "doc" ] {with-doc}
 ]
 depends: [
-  "dune" {>= "1.0"}
+  "ocaml"
+  "dune"
   "stdlib-shims"
   "seq"
   "odoc" {with-doc}
