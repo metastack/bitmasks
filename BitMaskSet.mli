@@ -266,7 +266,7 @@ module Make (Mask : BitMask) :
     val map : (Mask.t -> Mask.t) -> Mask.storage -> Mask.storage
     (**
        [map f s] is the bitmask whose elements are [f a0],[f a1]... [f aN], where [a0],[a1]...[aN]
-       are the elements of [s.]. The elements are passed to [f] in increasing order with respect to
+       are the elements of [s]. The elements are passed to [f] in increasing order with respect to
        the bit number (i.e. the constructor position within type [Mask.t]).
       
        If no element of [s] is changed by [f], [s] is returned unchanged.
