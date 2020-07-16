@@ -110,8 +110,14 @@ module Int64 =
 (* ********************************************************************************************** *
  * Make functor.                                                                                  *
  * ********************************************************************************************** *)
-module Make(Mask : BitMask) =
-  struct
+module Make(Mask : BitMask) : sig
+    include S
+      with type storage = Mask.storage
+       and type t = Mask.storage
+       and type elt := Mask.t
+
+    val create : storage -> t
+  end = struct
     type storage = Mask.storage
     type t = Mask.storage
 
