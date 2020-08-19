@@ -1,4 +1,4 @@
-????-??-?? David Allsopp <david.allsopp -at- metastack.dot.com>
+2020-08-19 David Allsopp <david.allsopp -at- metastack.dot.com>
   Version 1.3.0
 * Harden build against Stdlib.Set.S changing (@kit-ty-kate)
 * Add new filter_map function introduced in OCaml 4.11.0
