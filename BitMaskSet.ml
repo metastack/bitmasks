@@ -50,6 +50,7 @@ module type S =
     val add_seq : elt Seq.t -> t -> t
     val of_seq : elt Seq.t -> t
     val disjoint : t -> t -> bool
+    val to_rev_seq : t -> elt Seq.t
 
     type storage
 
@@ -632,6 +633,25 @@ module Make(Mask : BitMask) : sig
           f 0 lowest shifts
 
     let to_seq set = to_seq_from (Obj.magic 0 : Mask.t) set
+
+    let to_rev_seq set =
+      let set = Mask.logand set Mask.mask
+      in
+        let rec f i v s () =
+          let tail =
+            if Mask.compare v Mask.zero = 0
+            then Seq.empty
+            else let j = pred i
+                 in
+                   let (shift, s) = deltaShiftInv j s
+                   in
+                     f j (Mask.shift_right_logical v shift) s
+          in
+            if Mask.compare (Mask.logand v set) Mask.zero <> 0
+            then Seq.Cons((Obj.magic i : Mask.t), tail)
+            else tail ()
+        in
+          f topbit highest shiftsInv
 
     let add_seq s set = Seq.fold_left (fun set flag -> add flag set) set s
 

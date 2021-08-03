@@ -165,7 +165,9 @@ module Make(T : T) =
       (fun () -> T.equal (T.of_seq (T.to_seq set)) set) |> verify "of_seq / to_seq";
       (fun () -> T.equal (T.add_seq (Seq.return C) set_e) set_c_e) |> verify "add_seq";
       (fun () -> T.to_seq_from C set |> Seq.fold_left (fun a e -> e::a) [] = [E; C])
-        |> verify "to_seq_from"
+        |> verify "to_seq_from";
+      (fun () -> T.to_rev_seq set |> Seq.fold_left (fun a e -> e::a) [] = [A; C; E])
+        |> verify "to_rev_seq"
   end
 
 module Basic = Make(BMBasic)

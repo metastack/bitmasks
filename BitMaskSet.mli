@@ -93,6 +93,11 @@ module type S =
      * ****************************************************************************************** *)
     val disjoint : t -> t -> bool
 
+    (* ****************************************************************************************** *
+     * Added in 4.12.0.                                                                           *
+     * ****************************************************************************************** *)
+    val to_rev_seq : t -> elt Seq.t
+
     (**/**)
 
     type storage
@@ -437,6 +442,12 @@ module Make (Mask : BitMask) :
        with respect to the bit number (i.e. the constructor position within type [Mask.t]).
 
        @since 1.2.0
+      *)
+
+    val to_rev_seq : t -> Mask.t Seq.t
+    (**
+       [to_rev_seq s] returns the sequence of all elements of the given bitmask in decreasing
+       order with respect to the bit number (i.e. the constructor within type [Mask.t]).
       *)
 
     val add_seq : Mask.t Seq.t -> t -> t
