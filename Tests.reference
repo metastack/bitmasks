@@ -34,6 +34,7 @@ partition: PASSED
 of_seq / to_seq: PASSED
 add_seq: PASSED
 to_seq_from: PASSED
+to_rev_seq: PASSED
 Testing Evil bitmask...
 Physical equality on add: PASSED
 Physical equality on remove: PASSED
@@ -70,6 +71,7 @@ partition: PASSED
 of_seq / to_seq: PASSED
 add_seq: PASSED
 to_seq_from: PASSED
+to_rev_seq: PASSED
 Testing Devilish bitmask...
 Physical equality on add: PASSED
 Physical equality on remove: PASSED
@@ -106,3 +108,4 @@ partition: PASSED
 of_seq / to_seq: PASSED
 add_seq: PASSED
 to_seq_from: PASSED
+to_rev_seq: PASSED
