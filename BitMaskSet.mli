@@ -448,6 +448,8 @@ module Make (Mask : BitMask) :
     (**
        [to_rev_seq s] returns the sequence of all elements of the given bitmask in decreasing
        order with respect to the bit number (i.e. the constructor within type [Mask.t]).
+
+       @since 1.4.0
       *)
 
     val add_seq : Mask.t Seq.t -> t -> t
