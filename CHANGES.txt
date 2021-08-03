@@ -1,4 +1,4 @@
-????-??-?? David Allsopp <david.allsopp -at- metastack.dot.com>
+2021-08-03 David Allsopp <david.allsopp -at- metastack.dot.com>
   Version 1.4.0
 * Add new to_rev_seq function introduced in OCaml 4.12.0
 
