@@ -3,10 +3,11 @@
  * ********************************************************************************************** *
  * BitMask Sets                                                                                   *
  * ********************************************************************************************** *
- * Copyright (c) 2013-14 MetaStack Solutions Ltd.                                                 *
+ * Copyright (c) 2013-21 MetaStack Solutions Ltd.                                                 *
+ * Copyright (c) 2025 David Allsopp Ltd.                                                          *
  * ********************************************************************************************** *
  * Author: David Allsopp                                                                          *
- * 27-Dec-2017                                                                                    *
+ * 27-Dec-2013                                                                                    *
  * ********************************************************************************************** *
  * Redistribution and use in source and binary forms, with or without modification, are permitted *
  * provided that the following two conditions are met:                                            *
