@@ -44,6 +44,7 @@ module type S =
     val find_first_opt : (elt -> bool) -> t -> elt option
     val find_last : (elt -> bool) -> t -> elt
     val find_last_opt : (elt -> bool) -> t -> elt option
+    val to_list : t -> elt list
     val of_list : elt list -> t
     val to_seq_from : elt -> t -> elt Seq.t
     val to_seq : t -> elt Seq.t
@@ -517,6 +518,8 @@ module Make(Mask : BitMask) : sig
           else a
         in
           f [] topbit highest shiftsInv
+
+    let to_list = elements
 
     let min_elt set =
       let set = Mask.logand set Mask.mask
